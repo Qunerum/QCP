@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+**/.obj/
+**/build/
+**/*.sh
+**/*.qcp
+**/*.kate-swp
