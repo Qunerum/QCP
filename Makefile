@@ -26,7 +26,7 @@ TARGET = $(PLATFORM_DIR)/qcode$(EXT)
 
 OBJS = $(OBJ)/$(PLATFORM)/main.o \
       $(OBJ)/$(PLATFORM)/memory.o \
-      $(OBJ)/$(PLATFORM)/mainCmds.o \
+#       $(OBJ)/$(PLATFORM)/mainCmds.o \
       $(OBJ)/$(PLATFORM)/utility.o
 
 all: linux win
