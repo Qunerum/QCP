@@ -1,0 +1,3 @@
+**/Makefile linguist-vendored
+*.qcp linguist-vendored
+*.asm linguist-vendored

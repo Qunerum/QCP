@@ -1,18 +1,17 @@
 #include <stdio.h>
-#include "../include/memory.h"
+#include "compiler.h"
 
 int main() {
-    init_memory();
-    FILE* file = fopen("test.qcp", "r");
-    if (!file) { printf("Cannot open a file!\n"); return 1; }
-    int symbol, c;
-    while ((symbol = fgetc(file)) != EOF) {
-        if (symbol == '\n') continue;
-        else if (symbol == '{') { c++; continue; }
-        else if (symbol == '}' && c > 0) { c--; continue; }
+    FILE* in = fopen("test.qcp", "r");
+    if (!in) { printf("Cannot open the file!\n"); return 1; }
+    startCompiler();
+    char line[1024];
+
+    while (fgets(line, sizeof(line), in)) {
+        printf(": %s", line);
     }
-    printf("%d", c);
-    fclose(file);
-    putchar(10);
+
+    fclose(in);
+    endCompiler();
     return 0;
 }
