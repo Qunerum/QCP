@@ -41,8 +41,11 @@ void startCompiler() {
 	fprintf(out, "\tmov rdi, 1\n");
 	fprintf(out, "\tsyscall\n");
 	fprintf(out, "\tret\n");
+	fprintf(out, "; = = = = = = = = = = FUNCTIONS = = = = = = = = = =\n");
+	// print all functions
 	fprintf(out, "; = = = = = = = = = = MAIN = = = = = = = = = =\n");
 	fprintf(out, "_start:\n");
+	// print main function
 }
 /*
 _start:

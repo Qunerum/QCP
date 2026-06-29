@@ -14,6 +14,13 @@ section .data
 
 	test_string_bufor_len dd 0
 
+	_QCP_FUNC_test_ARG_x dd 0
+	_QCP_FUNC_test_CMD_print_1 db "Hello, World!"
+	_QCP_FUNC_test_CMD_print_2 db 10
+	_QCP_FUNC_test_CMD_print_3 db "Your value is: "
+	_QCP_FUNC_test_CMD_print_4 db v:x
+	_QCP_FUNC_test_CMD_print_5 db 10
+
 section .bss
 	bufor resb 12
 	test_string_bufor resb 4096
@@ -47,6 +54,10 @@ prt:
 	mov rax, 1
 	mov rdi, 1
 	syscall
+	ret
+; = = = = = = = = = = FUNCTIONS = = = = = = = = = =
+_QCP_FUNC_test:
+	;
 	ret
 ; = = = = = = = = = = MAIN = = = = = = = = = =
 _start:
