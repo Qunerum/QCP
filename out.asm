@@ -1,23 +1,10 @@
 default rel
-; db - 255
-; dw - 65 535
-; dd - 4 294 967 295
-; dq - 18 446 744 073 709 551 615
 ; = = = = = = = = = = VARIABLES = = = = = = = = = =
 section .data
-	nl db 10 ; \n
-	nll equ $ - nl ; \n len
-	main_int_x dd 0 ; <func-name>_<var-type>_<var-name>
-	public_int_y dd 24 ; public_<var-type>_<var-name>
-	test_str db "Hello, World!", 10, "x is: "
-	test_str_len equ $ - test_str
-
-	test_string_bufor_len dd 0
-
+	nl db 10
+	nll equ $ - nl
 section .bss
 	bufor resb 12
-	test_string_bufor resb 4096
-
 ; = = = = = = = = = = INT TO TEXT = = = = = = = = = =
 section .text
 	global _start
@@ -48,16 +35,10 @@ prt:
 	mov rdi, 1
 	syscall
 	ret
+; = = = = = = = = = = FUNCTIONS = = = = = = = = = =
 ; = = = = = = = = = = MAIN = = = = = = = = = =
 _start:
-	; User Code
-	lea rsi, [rel test_str]
-	mov rdx, test_str_len
-	call prt ; Print line
-	lea rsi, [rel nl]
-	mov rdx, nll
-	call prt ; Print line
 	; = = = END = = =
-	mov rax, 60
+	rax, 60
 	mov rdi, 0
 	syscall

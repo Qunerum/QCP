@@ -1,7 +1,8 @@
 #ifndef COMPILER_H
 #define COMPILER_H
+#include "main.h"
 
-void startCompiler();
+struct QCP_Node* startCompiler();
 void endCompiler();
 
 #endif

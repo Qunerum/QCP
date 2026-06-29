@@ -2,7 +2,7 @@
 #define COMMANDS_H
 
 typedef struct {
-	char* cmd;
+	char* lineTemp;
 	void (*handler)(char**);
 } QCP_Command;
 

@@ -1,9 +1,20 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include "main.h"
 
 FILE* out;
-void startCompiler() {
+struct QCP_Node* root;
+struct QCP_Node* startCompiler() {
 	out = fopen("out.asm", "w");
-	if (!out) { printf("Cannot open/write a file!\n"); return; }
+	if (!out) { printf("Cannot open/write a file!\n"); return NULL; }
+
+	root = malloc(sizeof(struct QCP_Node));
+	root->type = QCP_ROOT;
+	root->name = "root";
+	root->value = "";
+	root->child = NULL;
+	root->next = NULL;
+
 	fprintf(out, "default rel\n");
 	fprintf(out, "; = = = = = = = = = = VARIABLES = = = = = = = = = =\n");
 	fprintf(out, "section .data\n");
@@ -46,6 +57,7 @@ void startCompiler() {
 	fprintf(out, "; = = = = = = = = = = MAIN = = = = = = = = = =\n");
 	fprintf(out, "_start:\n");
 	// print main function
+	return root;
 }
 /*
 _start:
@@ -68,11 +80,12 @@ _start:
 
 
 void endCompiler() {
-	if (out) {
+	if (out && root) {
 		fprintf(out, "\t; = = = END = = =\n");
 		fprintf(out, "\trax, 60\n");
 		fprintf(out, "\tmov rdi, 0\n");
 		fprintf(out, "\tsyscall\n");
 		fclose(out);
+		free(root);
 	}
 }
