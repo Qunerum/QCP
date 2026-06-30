@@ -5,3 +5,9 @@
 **/*.sh
 **/*.qcp
 **/*.kate-swp
+
+**/qcp_obj/
+
+program
+program.exe
+

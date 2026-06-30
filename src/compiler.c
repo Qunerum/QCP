@@ -4,8 +4,24 @@
 
 FILE* out;
 struct QCP_Node* root;
+int os = -1, rm_obj = 0;
+void add(int t, const char* instruction) { fprintf(out, "%s%s\n", t ? "\t" : "", instruction); }
 struct QCP_Node* startCompiler() {
-	out = fopen("out.asm", "w");
+	#ifdef _WIN32
+	os = 0;
+	#elif __linux__
+	os = 1;
+	#endif
+	if (os <= -1) { printf("Error! Unable to recognize operating system!\n"); return NULL; }
+	printf("Starting compilation...\n");
+
+	if (system("nasm -v") != 0) { printf("Error: NASM is not installed or not in the PATH!\n"); return NULL; }
+
+	printf("Creating directory 'qcp_obj'...\n");
+	if (system(os ? "mkdir -p qcp_obj" : "if not exist qcp_obj mkdir qcp_obj")) { printf("Error! Could not create directory 'obj'\n"); return NULL; }
+	printf("Catalog 'qcp_obj' is created!\n");
+
+	out = fopen(os ? "qcp_obj/out.asm" : "qcp_obj\\out.asm", "w");
 	if (!out) { printf("Cannot open/write a file!\n"); return NULL; }
 
 	root = malloc(sizeof(struct QCP_Node));
@@ -15,47 +31,47 @@ struct QCP_Node* startCompiler() {
 	root->child = NULL;
 	root->next = NULL;
 
-	fprintf(out, "default rel\n");
-	fprintf(out, "; = = = = = = = = = = VARIABLES = = = = = = = = = =\n");
-	fprintf(out, "section .data\n");
-	fprintf(out, "\tnl db 10\n");
-	fprintf(out, "\tnll equ $ - nl\n");
-	fprintf(out, "section .bss\n");
-	fprintf(out, "\tbufor resb 12\n");
-	fprintf(out, "; = = = = = = = = = = INT TO TEXT = = = = = = = = = =\n");
-	fprintf(out, "section .text\n");
-	fprintf(out, "\tglobal _start\n");
-	fprintf(out, "intToText:\n");
-	fprintf(out, "\tmov rcx, 0\n");
-	fprintf(out, "\tmov ebx, 10\n");
-	fprintf(out, ".ittLoop:\n");
-	fprintf(out, "\tmov edx, 0\n");
-	fprintf(out, "\tdiv ebx\n");
-	fprintf(out, "\tadd edx, 48\n");
-	fprintf(out, "\tpush rdx\n");
-	fprintf(out, "\tinc rcx\n");
-	fprintf(out, "\tcmp eax, 0\n");
-	fprintf(out, "\tjne .ittLoop\n");
-	fprintf(out, "\tlea rdi, [rel bufor]\n");
-	fprintf(out, "\tmov rdx, rcx\n");
-	fprintf(out, "\tlea rsi, [rel bufor]\n");
-	fprintf(out, ".ittLoopWrite:\n");
-	fprintf(out, "\tpop rax\n");
-	fprintf(out, "\tmov [rdi], al\n");
-	fprintf(out, "\tinc rdi\n");
-	fprintf(out, "\tloop .ittLoopWrite\n");
-	fprintf(out, "\tinc rdx\n");
-	fprintf(out, "\tret\n");
-	fprintf(out, "; = = = = = = = = = = PRINT = = = = = = = = = =\n");
-	fprintf(out, "prt:\n");
-	fprintf(out, "\tmov rax, 1\n");
-	fprintf(out, "\tmov rdi, 1\n");
-	fprintf(out, "\tsyscall\n");
-	fprintf(out, "\tret\n");
-	fprintf(out, "; = = = = = = = = = = FUNCTIONS = = = = = = = = = =\n");
+	add(0, "default rel");
+	add(0, "; = = = = = = = = = = VARIABLES = = = = = = = = = =");
+	add(0, "section .data");
+	add(1, "nl db 10");
+	add(1, "nll equ $ - nl");
+	add(0, "section .bss");
+	add(1, "bufor resb 12");
+	add(0, "; = = = = = = = = = = INT TO TEXT = = = = = = = = = =");
+	add(0, "section .text");
+	add(1, "global _start");
+	add(0, "intToText:");
+	add(1, "mov rcx, 0");
+	add(1, "mov ebx, 10");
+	add(0, ".ittLoop:");
+	add(1, "mov edx, 0");
+	add(1, "div ebx");
+	add(1, "add edx, 48");
+	add(1, "push rdx");
+	add(1, "inc rcx");
+	add(1, "cmp eax, 0");
+	add(1, "jne .ittLoop");
+	add(1, "lea rdi, [rel bufor]");
+	add(1, "mov rdx, rcx");
+	add(1, "lea rsi, [rel bufor]");
+	add(0, ".ittLoopWrite:");
+	add(1, "pop rax");
+	add(1, "mov [rdi], al");
+	add(1, "inc rdi");
+	add(1, "loop .ittLoopWrite");
+	add(1, "inc rdx");
+	add(1, "ret");
+	add(0, "; = = = = = = = = = = PRINT = = = = = = = = = =");
+	add(0, "prt:");
+	add(1, "mov rax, 1");
+	add(1, "mov rdi, 1");
+	add(1, "syscall");
+	add(1, "ret");
+	add(0, "; = = = = = = = = = = FUNCTIONS = = = = = = = = = =");
 	// print all functions
-	fprintf(out, "; = = = = = = = = = = MAIN = = = = = = = = = =\n");
-	fprintf(out, "_start:\n");
+	add(0, "; = = = = = = = = = = MAIN = = = = = = = = = =");
+	add(0, "_start:");
 	// print main function
 	return root;
 }
@@ -79,13 +95,27 @@ _start:
 */
 
 
-void endCompiler() {
+int endCompiler() {
 	if (out && root) {
-		fprintf(out, "\t; = = = END = = =\n");
-		fprintf(out, "\trax, 60\n");
-		fprintf(out, "\tmov rdi, 0\n");
-		fprintf(out, "\tsyscall\n");
+		add(1, "; = = = END = = =");
+		add(1, "mov rax, 60");
+		add(1, "mov rdi, 0");
+		add(1, "syscall");
 		fclose(out);
 		free(root);
+
+		printf("Compiling to binary...\n");
+		if (system(os ? "nasm -f elf64 qcp_obj/out.asm -o qcp_obj/out.o" : "nasm -f elf64 qcp_obj\\out.asm -o qcp_obj\\out.o")) { printf("Assembler compilation error!\n"); return 1; }
+		if (system(os ? "ld qcp_obj/out.o -o program" : "ld qcp_obj\\out.o -o program.exe")) { printf("Linking error!\n"); return 1; }
+
+		if (rm_obj) {
+			printf("Deleting the 'qcp_obj' directory...\n");
+			if (system(os ? "rm -rf qcp_obj" : "rmdir /s /q qcp_obj")) { printf("Error! Cannot remove directory 'qcp_obj'!\n"); return 1; }
+		}
+
+		printf("Compilation completed successfully!\n");
+		printf(os ? "Running: './program'\n\n" : "Running: 'program.exe'\n\n");
+		system(os ? "./program" : "program.exe");
 	}
+	return 0;
 }

@@ -3,6 +3,6 @@
 #include "main.h"
 
 struct QCP_Node* startCompiler();
-void endCompiler();
+int endCompiler();
 
 #endif

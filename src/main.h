@@ -3,7 +3,10 @@
 
 #define MAX_LINE_SIZE 4096
 
-typedef enum { QCP_ROOT, QCP_FUNC } QCP_Node_Type;
+typedef enum {
+	QCP_ROOT, QCP_FUNC, QCP_ARG,
+	QCP_INT
+} QCP_Node_Type;
 struct QCP_Node {
 	QCP_Node_Type type;
 	char* name;
