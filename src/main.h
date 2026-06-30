@@ -4,8 +4,13 @@
 #define MAX_LINE_SIZE 4096
 
 typedef enum {
-	QCP_ROOT, QCP_FUNC, QCP_ARG,
-	QCP_INT
+	QCP_ROOT, // 0
+	QCP_FUNC, // 1
+	QCP_ARG, // 2
+	QCP_RETURN, // 3
+
+	QCP_LOCAL_INT, // 4
+	QCP_INT // 5
 } QCP_Node_Type;
 struct QCP_Node {
 	QCP_Node_Type type;
@@ -14,5 +19,8 @@ struct QCP_Node {
 	struct QCP_Node* child;
 	struct QCP_Node* next;
 };
+
+struct QCP_Node* createNode(QCP_Node_Type type, char* name, char* value);
+void addChild(struct QCP_Node* parent, struct QCP_Node* newChild);
 
 #endif

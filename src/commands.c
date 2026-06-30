@@ -1,7 +1,6 @@
 #include "commands.h"
 // #include "main.h"
 
-
 QCP_Command cmds[] = {
 	{}
 };

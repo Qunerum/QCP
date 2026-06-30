@@ -6,6 +6,7 @@ FILE* out;
 struct QCP_Node* root;
 int os = -1, rm_obj = 0;
 void add(int t, const char* instruction) { fprintf(out, "%s%s\n", t ? "\t" : "", instruction); }
+
 struct QCP_Node* startCompiler() {
 	#ifdef _WIN32
 	os = 0;
@@ -24,20 +25,20 @@ struct QCP_Node* startCompiler() {
 	out = fopen(os ? "qcp_obj/out.asm" : "qcp_obj\\out.asm", "w");
 	if (!out) { printf("Cannot open/write a file!\n"); return NULL; }
 
-	root = malloc(sizeof(struct QCP_Node));
-	root->type = QCP_ROOT;
-	root->name = "root";
-	root->value = "";
-	root->child = NULL;
-	root->next = NULL;
+	root = createNode(QCP_ROOT, "root", "");
 
+	add(0, "; QCode Plus v. 0.0.8");
 	add(0, "default rel");
 	add(0, "; = = = = = = = = = = VARIABLES = = = = = = = = = =");
 	add(0, "section .data");
 	add(1, "nl db 10");
 	add(1, "nll equ $ - nl");
+	// add values
+	add(1, "qcp_l_main_int_x dd 15 ; int x = 15; | QCP_LOCAL_INT");
+
 	add(0, "section .bss");
-	add(1, "bufor resb 12");
+	add(1, "itt_bfr resb 12");
+	// add allocation
 	add(0, "; = = = = = = = = = = INT TO TEXT = = = = = = = = = =");
 	add(0, "section .text");
 	add(1, "global _start");
@@ -52,9 +53,9 @@ struct QCP_Node* startCompiler() {
 	add(1, "inc rcx");
 	add(1, "cmp eax, 0");
 	add(1, "jne .ittLoop");
-	add(1, "lea rdi, [rel bufor]");
+	add(1, "lea rdi, [rel itt_bfr]");
 	add(1, "mov rdx, rcx");
-	add(1, "lea rsi, [rel bufor]");
+	add(1, "lea rsi, [rel itt_bfr]");
 	add(0, ".ittLoopWrite:");
 	add(1, "pop rax");
 	add(1, "mov [rdi], al");
@@ -68,11 +69,22 @@ struct QCP_Node* startCompiler() {
 	add(1, "mov rdi, 1");
 	add(1, "syscall");
 	add(1, "ret");
-	add(0, "; = = = = = = = = = = FUNCTIONS = = = = = = = = = =");
-	// print all functions
-	add(0, "; = = = = = = = = = = MAIN = = = = = = = = = =");
+	add(0, "prtln:");
+	add(1, "lea rsi, [rel nl]");
+	add(1, "mov rdx, nll");
+	add(1, "mov rax, 1");
+	add(1, "mov rdi, 1");
+	add(1, "syscall");
+	add(1, "ret");
+	add(0, "; = = = = = = = = = = CODE = = = = = = = = = =");
 	add(0, "_start:");
-	// print main function
+	// main function
+	add(1, "add dword [rel qcp_l_main_int_x], 5 ; x += 5");
+
+	add(1, "mov eax, [rel qcp_l_main_int_x] ; print(x 10);");
+	add(1, "call intToText ; print(x 10);");
+	add(1, "call prt ; print(x 10);");
+	add(1, "call prtln ; print(x 10);");
 	return root;
 }
 /*

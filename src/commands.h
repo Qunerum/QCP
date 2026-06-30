@@ -6,4 +6,7 @@ typedef struct {
 	void (*handler)(char**);
 } QCP_Command;
 
+extern QCP_Command cmds[];
+extern int cmdCount;
+
 #endif
