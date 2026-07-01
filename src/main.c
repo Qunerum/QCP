@@ -4,6 +4,12 @@
 #include "parser.h"
 #include "compiler.h"
 
+void err(int line, const char* lineContent, int code) {
+    printf("\033[31m[QCP Compiler] ERROR [%03d] at line %d:\n", code, line);
+    printf("  %d | %s\033[0m\n", line, lineContent);
+    exit(1);
+}
+
 void printTree(struct QCP_Node* node, int depth) {
     if (node == NULL) return;
     for (int i = 0; i < depth; i++) printf("  ");
@@ -23,7 +29,7 @@ int main() {
     struct QCP_Node* int_y = createNode(QCP_LOCAL_INT, "y", "5");
     addChild(main, int_x);
     addChild(main, int_y);
-
+    printf("\n\n");
     char line[MAX_LINE_SIZE];
     while (fgets(line, sizeof(line), in)) { madeLine(line); }
     fclose(in);

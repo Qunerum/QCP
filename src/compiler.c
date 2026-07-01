@@ -34,7 +34,9 @@ struct QCP_Node* startCompiler() {
 	add(1, "nl db 10");
 	add(1, "nll equ $ - nl");
 	// add values
-	add(1, "qcp_l_main_int_x dd 15 ; int x = 15; | QCP_LOCAL_INT");
+	add(1, "qcp_int_x dd 15 ; int x = 15; | QCP_INT");
+
+	add(1, "qcp_l_main_int_y dd 8 ; int y = 8; | QCP_LOCAL_INT");
 
 	add(0, "section .bss");
 	add(1, "itt_bfr resb 12");
@@ -79,12 +81,19 @@ struct QCP_Node* startCompiler() {
 	add(0, "; = = = = = = = = = = CODE = = = = = = = = = =");
 	add(0, "_start:");
 	// main function
-	add(1, "add dword [rel qcp_l_main_int_x], 5 ; x += 5");
+	add(1, "mov eax, [rel qcp_l_main_int_y] ; x += y;");
+	add(1, "add dword [rel qcp_int_x], eax ; x += y;");
 
-	add(1, "mov eax, [rel qcp_l_main_int_x] ; print(x 10);");
+	add(1, "mov eax, [rel qcp_int_x] ; if (x == 23)");
+	add(1, "cmp eax, 23 ; if (x == 23)");
+	add(1, "jne .if_0_end ; if (x == 23)");
+
+	add(1, "mov eax, [rel qcp_int_x] ; print(x 10);");
 	add(1, "call intToText ; print(x 10);");
 	add(1, "call prt ; print(x 10);");
 	add(1, "call prtln ; print(x 10);");
+
+	add(0, ".if_0_end:");
 	return root;
 }
 /*
