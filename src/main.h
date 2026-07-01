@@ -14,8 +14,8 @@ typedef enum {
 } QCP_Node_Type;
 struct QCP_Node {
 	QCP_Node_Type type;
-	char* name;
-	char* value;
+	char name[256];
+	char value[256];
 	char asmCmd[65];
 	struct QCP_Node* child;
 	struct QCP_Node* next;

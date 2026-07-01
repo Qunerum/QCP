@@ -1,10 +1,12 @@
+#include "commands.h"
 #include "tools.h"
 #include "main.h"
 #include <stdio.h>
 
-int lnNmb = 1, deep = 0, inString = 0;
+int lnNmb = 1, deep = 0;
 extern struct QCP_Node* root;
 struct QCP_Node* actualFunc;
+
 void madeLine(char line[MAX_LINE_SIZE]) {
 	int l = len(line);
 	if (line[l-1] == '\n') line[l-1] = '\0';
@@ -18,22 +20,6 @@ void madeLine(char line[MAX_LINE_SIZE]) {
 		printf("'%s', ", list[i]);
 	}
 	printf("\b\b] Length: %d\n", max);
-
-	if (is(list[0], "func") && deep == 0) {
-		deep++;
-		char name[256];
-		char args[1024];
-		int argLen = 0;
-		splitSimple(list[1], '(', name, args, NULL, &argLen);
-		if (args[argLen - 1] == ')') {
-			args[argLen - 1] = '\0';
-			printf("Args: '%s'\n", args);
-		} else err(lnNmb, line, EXPECTED);
-
-
-		// struct QCP_Node* fn = createNode(QCP_FUNC, "test", "");
-		// actualFunc = fn;
-		// addChild(root, fn);
-	}
+	runCmd(list, line);
 	lnNmb++;
 }
